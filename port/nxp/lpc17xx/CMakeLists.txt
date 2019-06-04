@@ -1,0 +1,104 @@
+set(LPC17XX_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+set(LPC17XX_LINKER_PATH ${CMAKE_CURRENT_SOURCE_DIR}/linker)
+set(LPC17XX_STARTUP_PATH ${LPC17XX_PATH}/startup)
+set(LPCOPEN_SRCPATH ${LPC17XX_PATH}/lpcopen/src)
+set(LPCOPEN_INCPATH ${LPC17XX_PATH}/lpcopen/inc)
+
+include_directories(${LPC17XX_PATH})
+include_directories(${PROJ_HDRS})
+
+#Silence GCC Warnings
+add_compile_options(-Wno-switch -Wno-unused-but-set-variable)
+
+set(UCONTROLLER_SRCS
+  ${LPC17XX_STARTUP_PATH}/cr_startup_lpc175x_6x.c
+  ${LPC17XX_STARTUP_PATH}/sysinit.c
+  )
+
+set(UCONTROLLER_HDRS
+  ${LPC17XX_PATH}
+  ${LPCOPEN_INCPATH}
+  )
+
+set(LIBLPCOPEN_SRCS
+  ${LPCOPEN_SRCPATH}/chip_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/clock_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/gpio_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/gpioint_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/i2c_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/iap.c
+  ${LPCOPEN_SRCPATH}/iocon_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/spi_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/ssp_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/sysctl_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/sysinit_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/timer_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/uart_17xx_40xx.c
+  ${LPCOPEN_SRCPATH}/wwdt_17xx_40xx.c
+  )
+
+# if(UART_RINGBUFFER)
+#   set(LIBLPCOPEN_SRCS ${LIBLPCOPEN_SRCS} ${LPCOPEN_SRCPATH}/ring_buffer.c ${LPC17XX_PATH}/lpc17_uartrb.c)
+#   set(MODULES_FLAGS ${MODULES_FLAGS} -DUART_RINGBUFFER PARENT_SCOPE)
+# else()
+#   set(LIBLPCOPEN_SRCS ${LIBLPCOPEN_SRCS} ${LPC17XX_PATH}/lpc17_uart.c)
+# endif()
+
+## Debug probe
+if(NOT DEBUG_PROBE)
+  message(WARNING "Debug probe not selected, defaulting to cmsis-dap")
+  set(DEBUG_PROBE "cmsis-dap")
+endif()
+
+if(${DEBUG_PROBE} STREQUAL "cmsis-dap")
+elseif(${DEBUG_PROBE} STREQUAL "jlink")
+else()
+  message(FATAL_ERROR "${DEBUG_PROBE} not supported for the selected target!")
+endif()
+
+message(STATUS "Selected debug probe: ${DEBUG_PROBE}")
+set(OPENOCD_TARGET lpc17xx)
+
+include_directories(${LPCOPEN_INCPATH})
+
+set(TARGET_ARCH "armv7-m")
+set(TARGET_CPU "cortex-m3")
+
+set(LPC17_FLAGS ${LPC17_FLAGS} -DCLOCK_12MHZ)
+set(LPC17_FLAGS ${LPC17_FLAGS} -D__CODE_RED)
+set(LPC17_FLAGS ${LPC17_FLAGS} -DCORE_M3)
+set(LPC17_FLAGS ${LPC17_FLAGS} -D__USE_LPCOPEN)
+set(LPC17_FLAGS ${LPC17_FLAGS} -DNO_BOARD_LIB)
+set(LPC17_FLAGS ${LPC17_FLAGS} -D__NEWLIB__)
+set(LPC17_FLAGS ${LPC17_FLAGS} -D__LPC17XX__)
+set(LPC17_FLAGS ${LPC17_FLAGS} -mcpu=${TARGET_CPU} -mtune=${TARGET_CPU})
+set(LPC17_FLAGS ${LPC17_FLAGS} -march=${TARGET_ARCH})
+set(LPC17_FLAGS ${LPC17_FLAGS} -mthumb -mthumb-interwork -mno-sched-prolog -mapcs-frame)
+
+string(REGEX REPLACE ";" " " LPC17_FLAGS "${LPC17_FLAGS}")
+
+add_library(lpcopen STATIC ${LIBLPCOPEN_SRCS})
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${LPC17_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" PARENT_SCOPE)
+
+set(TARGET_ARCH ${TARGET_ARCH} PARENT_SCOPE)
+set(TARGET_CPU ${TARGET_CPU} PARENT_SCOPE)
+set(TARGET_LIBS "lpcopen" PARENT_SCOPE)
+set(TARGET_LINK_FLAGS "-Wl,--gc-sections" PARENT_SCOPE)
+set(UCONTROLLER_SRCS ${UCONTROLLER_SRCS} PARENT_SCOPE)
+set(UCONTROLLER_HDRS ${UCONTROLLER_HDRS} PARENT_SCOPE)
+set(BOOT_START_ADDR "0x00000000" PARENT_SCOPE)
+set(APP_START_ADDR "0x00002000" PARENT_SCOPE)
+set(OPENOCD_TARGET ${OPENOCD_TARGET} PARENT_SCOPE)
+set(DEBUG_PROBE ${DEBUG_PROBE} PARENT_SCOPE)
+
+if(${TARGET_CONTROLLER} MATCHES "^(lpc|LPC)1764")
+  set(APP_LINKER_SCRIPT ${LPC17XX_LINKER_PATH}/LPC1764_app.ld PARENT_SCOPE)
+  set(BOOT_LINKER_SCRIPT ${LPC17XX_LINKER_PATH}/LPC1764_boot.ld PARENT_SCOPE)
+elseif(${TARGET_CONTROLLER} MATCHES "^(lpc|LPC)1769")
+  set(APP_LINKER_SCRIPT ${LPC17XX_LINKER_PATH}/LPC1769_app.ld PARENT_SCOPE)
+  set(BOOT_LINKER_SCRIPT ${LPC17XX_LINKER_PATH}/LPC1769_boot.ld PARENT_SCOPE)
+else()
+  message(FATAL_ERROR "Target ${TARGET_CONTROLLER} not supported!")
+endif()

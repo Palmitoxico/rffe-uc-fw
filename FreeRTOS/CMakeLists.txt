@@ -1,0 +1,44 @@
+# Build FreeRTOS library
+
+set(FREERTOS_INCDIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+set(FREERTOS_INC ${FREERTOS_INCDIR})
+
+#Include FreeRTOS Trace module sources
+if(FREERTOS_TRACE)
+  add_subdirectory(trace)
+endif()
+
+#Port files
+if(${TARGET_CPU} STREQUAL "cortex-m3")
+  set(FREERTOS_INC ${FREERTOS_INC} ${CMAKE_CURRENT_SOURCE_DIR}/portable/GCC/ARM_CM3)
+  set(LIBFREERTOS_SRCS ${LIBFREERTOS_SRCS}
+    portable/GCC/ARM_CM3/port.c
+    portable/MemMang/heap_4.c
+    )
+  set(FREERTOS_FLAGS ${FREERTOS_FLAGS} -mcpu=${TARGET_CPU} -mtune=${TARGET_CPU})
+  set(FREERTOS_FLAGS ${FREERTOS_FLAGS} -march=${TARGET_ARCH})
+  set(FREERTOS_FLAGS ${FREERTOS_FLAGS} -mthumb -mthumb-interwork -mno-sched-prolog -mapcs-frame)
+else()
+  message(FATAL_ERROR "The specified controller doesn't have a supported FreeRTOS port!")
+endif()
+
+#FreeRTOS common files
+set(LIBFREERTOS_SRCS ${LIBFREERTOS_SRCS}
+  list.c
+  queue.c
+  timers.c
+  tasks.c
+  event_groups.c
+  )
+
+include_directories(${UCONTROLLER_HDRS})
+include_directories(${FREERTOS_INC})
+
+set(FREERTOS_INC ${FREERTOS_INC} PARENT_SCOPE)
+set(PROJ_HDRS ${PROJ_HDRS} ${FREERTOS_INC} PARENT_SCOPE)
+
+string(REGEX REPLACE ";" " " FREERTOS_FLAGS "${FREERTOS_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FREERTOS_FLAGS}")
+
+add_library(FreeRTOS STATIC ${LIBFREERTOS_SRCS})
