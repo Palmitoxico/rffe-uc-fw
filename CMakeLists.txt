@@ -40,8 +40,8 @@ set(PROJ_HDRS ${CMAKE_SOURCE_DIR})
 
 add_subdirectory(port)
 add_subdirectory(boot)
-add_subdirectory(uhal)
 add_subdirectory(FreeRTOS)
+add_subdirectory(uhal)
 add_subdirectory(app)
 
 include_directories(${UCONTROLLER_HDRS} ${PROJ_HDRS})
@@ -86,10 +86,10 @@ set_target_properties(bootloader PROPERTIES
 configure_file(openocd/openocd.cfg.in openocd.cfg)
 
 # Headers path
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${PROJ_HDRS})
+target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${PROJ_HDRS} ${UHAL_INCDIR})
 target_include_directories(bootloader PUBLIC ${PROJ_HDRS})
 # Link libraries
-target_link_libraries(${CMAKE_PROJECT_NAME} FreeRTOS c m ${TARGET_LIBS})
+target_link_libraries(${CMAKE_PROJECT_NAME} uhal FreeRTOS c m ${TARGET_LIBS})
 target_link_libraries(bootloader c m ${TARGET_LIBS})
 
 ##Generate binary file
