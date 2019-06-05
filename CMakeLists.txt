@@ -42,6 +42,7 @@ add_subdirectory(port)
 add_subdirectory(boot)
 add_subdirectory(uhal)
 add_subdirectory(FreeRTOS)
+add_subdirectory(app)
 
 include_directories(${UCONTROLLER_HDRS} ${PROJ_HDRS})
 
