@@ -39,9 +39,9 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "")
 set(PROJ_HDRS ${CMAKE_SOURCE_DIR})
 
 add_subdirectory(port)
-add_subdirectory(FreeRTOS)
 add_subdirectory(boot)
 add_subdirectory(uhal)
+add_subdirectory(FreeRTOS)
 
 include_directories(${UCONTROLLER_HDRS} ${PROJ_HDRS})
 

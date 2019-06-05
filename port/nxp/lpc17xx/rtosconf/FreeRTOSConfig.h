@@ -52,7 +52,7 @@ licensing and training services.
 #define configUSE_IDLE_HOOK                     0
 #define configMAX_PRIORITIES                    ( 6 )
 #define configUSE_TICK_HOOK                     0
-#define configCPU_CLOCK_HZ                      ( ( unsigned long ) 8000000)
+#define configCPU_CLOCK_HZ                      ( ( unsigned long ) 12000000)
 #define configTICK_RATE_HZ                      ( ( portTickType ) 1000 )
 #define configMINIMAL_STACK_SIZE                ( ( unsigned short ) 80 )
 #define configTOTAL_HEAP_SIZE                   ( ( size_t ) ( 0x4000 ) )
@@ -115,7 +115,7 @@ extern void vConfigureTimerForRunTimeStats( void );
 /*
  * Use the Cortex-M3 optimisations, rather than the generic C implementation.
  */
-#define configUSE_PORT_OPTIMISED_TASK_SELECTION 1
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
 
 #define vPortSVCHandler SVC_Handler
 #define xPortPendSVHandler PendSV_Handler
