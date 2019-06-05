@@ -48,6 +48,15 @@ void vTaskBlinky(void *pvParameters)
     }
 }
 
+/**
+ * @brief Application entry function
+ *
+ * @note This function is called before giving control to FreeRTOS, it
+ * should be used to create tasks, initialize data structures and
+ * periphrerals. WARNNING: Don't call uhal blocking functions here, as
+ * it uses FreeRTOS semaphores and queues and FreeRTOS isn't running
+ * yet.
+ */
 void app_config()
 {
     Chip_Clock_SetPCLKDiv(SYSCTL_PCLK_UART0, SYSCTL_CLKDIV_2);
