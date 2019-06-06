@@ -25,15 +25,15 @@
 #include "chip.h"
 #include "chip_lpc175x_6x.h"
 #include "pmu_17xx_40xx.h"
-#include "gpio_17xx_40xx.h"
-#include "uart_17xx_40xx.h"
-#include "iocon_17xx_40xx.h"
+
+#include "pin_init.h"
 
 void app_config();
 
 int main()
 {
 	SystemCoreClockUpdate();
+    pin_init();
     app_config();
 
     vTaskStartScheduler();

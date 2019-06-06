@@ -23,11 +23,8 @@
 #include "task.h"
 
 #include "chip.h"
-#include "chip_lpc175x_6x.h"
-#include "pmu_17xx_40xx.h"
-#include "gpio_17xx_40xx.h"
 #include "uart_17xx_40xx.h"
-#include "iocon_17xx_40xx.h"
+#include "gpio.h"
 
 #include "GitSHA1.h"
 
@@ -41,7 +38,7 @@ void vTaskBlinky(void *pvParameters)
 
     while(1)
     {
-        Chip_GPIO_SetPinToggle(LPC_GPIO, 1, 23);
+        gpio_pin_toggle(1, 23);
 		Chip_UART_SendBlocking(LPC_UART0, g_GIT_SHA1, strlen(g_GIT_SHA1));
 		Chip_UART_SendBlocking(LPC_UART0, "\r\n", sizeof("\r\n"));
         vTaskDelay(xDelay);
@@ -60,12 +57,6 @@ void vTaskBlinky(void *pvParameters)
 void app_config()
 {
     Chip_Clock_SetPCLKDiv(SYSCTL_PCLK_UART0, SYSCTL_CLKDIV_2);
-
-    Chip_GPIO_Init(LPC_GPIO);
-    Chip_GPIO_SetPinDIROutput(LPC_GPIO, 1, 23);
-
-    Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 2, (IOCON_FUNC1 | IOCON_MODE_INACT));
-    Chip_IOCON_PinMuxSet(LPC_IOCON, 0, 3, (IOCON_FUNC1 | IOCON_MODE_INACT));
 
     Chip_UART_Init(LPC_UART0);
     Chip_UART_SetBaud(LPC_UART0, 19200);
