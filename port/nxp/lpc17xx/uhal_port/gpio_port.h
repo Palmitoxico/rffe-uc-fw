@@ -27,7 +27,7 @@
 #ifndef GPIO_PORT_H_
 #define GPIO_PORT_H_
 
-#include "gpio_17xx_40xx.h"
+#include "chip.h"
 #include <stdint.h>
 
 #define GPIO_LEVEL_LOW  0
