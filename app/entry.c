@@ -22,9 +22,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "chip.h"
-#include "uart_17xx_40xx.h"
 #include "gpio.h"
+#include "uart.h"
 
 #include "GitSHA1.h"
 
@@ -34,13 +33,13 @@ TaskHandle_t vTaskBlinky_Handle;
 
 void vTaskBlinky(void *pvParameters)
 {
-    const TickType_t xDelay = 1000 / portTICK_PERIOD_MS;
+    const TickType_t xDelay = 200 / portTICK_PERIOD_MS;
 
     while(1)
     {
         gpio_pin_toggle(1, 23);
-        Chip_UART_SendBlocking(LPC_UART0, g_GIT_SHA1, strlen(g_GIT_SHA1));
-        Chip_UART_SendBlocking(LPC_UART0, "\r\n", sizeof("\r\n"));
+        uart_print(0, g_GIT_SHA1, portMAX_DELAY);
+        uart_print(0, "\r\n", portMAX_DELAY);
         vTaskDelay(xDelay);
     }
 }
@@ -56,12 +55,9 @@ void vTaskBlinky(void *pvParameters)
  */
 void app_config()
 {
-    Chip_Clock_SetPCLKDiv(SYSCTL_PCLK_UART0, SYSCTL_CLKDIV_2);
-
-    Chip_UART_Init(LPC_UART0);
-    Chip_UART_SetBaud(LPC_UART0, 19200);
-    Chip_UART_ConfigData(LPC_UART0, (UART_LCR_WLEN8 | UART_LCR_SBS_1BIT | UART_LCR_PARITY_DIS));
-    Chip_UART_TXEnable(LPC_UART0);
-
+    /*
+     * Initialize UART0
+     */
+    uart_init(0, 19200);
     xTaskCreate(vTaskBlinky, "Blinky", 120, NULL, tskIDLE_PRIORITY, &vTaskBlinky_Handle);
 }
