@@ -39,8 +39,8 @@ void vTaskBlinky(void *pvParameters)
     while(1)
     {
         gpio_pin_toggle(1, 23);
-		Chip_UART_SendBlocking(LPC_UART0, g_GIT_SHA1, strlen(g_GIT_SHA1));
-		Chip_UART_SendBlocking(LPC_UART0, "\r\n", sizeof("\r\n"));
+        Chip_UART_SendBlocking(LPC_UART0, g_GIT_SHA1, strlen(g_GIT_SHA1));
+        Chip_UART_SendBlocking(LPC_UART0, "\r\n", sizeof("\r\n"));
         vTaskDelay(xDelay);
     }
 }

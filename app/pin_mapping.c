@@ -30,9 +30,9 @@
 
 struct pin_cfg_t pin_init_vec[] =
 {
-	{0, 2, PIN_FUNC_1, PIN_MODE_INACT, PIN_DIR_OUTPUT}, /* UART0 RXD P0.2 */
-	{0, 3, PIN_FUNC_1, PIN_MODE_INACT, PIN_DIR_INPUT}, /* UART0 TXD P0.3 */
-	{1, 23, PIN_FUNC_GPIO, PIN_MODE_INACT, PIN_DIR_OUTPUT}, /* LED4 P1.23 */
+    {0, 2, PIN_FUNC_1, PIN_MODE_INACT, PIN_DIR_OUTPUT}, /* UART0 RXD P0.2 */
+    {0, 3, PIN_FUNC_1, PIN_MODE_INACT, PIN_DIR_INPUT}, /* UART0 TXD P0.3 */
+    {1, 23, PIN_FUNC_GPIO, PIN_MODE_INACT, PIN_DIR_OUTPUT}, /* LED4 P1.23 */
 };
 
 const int pin_init_vec_len = sizeof(pin_init_vec) / sizeof(struct pin_cfg_t);

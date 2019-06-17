@@ -32,7 +32,7 @@ void app_config();
 
 int main()
 {
-	SystemCoreClockUpdate();
+    SystemCoreClockUpdate();
     pin_init();
     app_config();
 
