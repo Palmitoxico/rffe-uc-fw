@@ -22,10 +22,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "chip.h"
-#include "chip_lpc175x_6x.h"
-#include "pmu_17xx_40xx.h"
-
+#include "power.h"
 #include "pin_init.h"
 
 void app_config();
@@ -45,7 +42,7 @@ int main()
 /* Put the MCU in sleep state when no task is running */
 void vApplicationIdleHook (void)
 {
-    Chip_PMU_Sleep(LPC_PMU, PMU_MCU_SLEEP);
+    power_soft_sleep();
 }
 
 /* FreeRTOS debug functions */
