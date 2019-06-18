@@ -157,7 +157,7 @@ void UART0_IRQHandler()
      */
     if (LPC_UART0->IER & UART_IER_THREINT)
     {
-         uart0_tx_irq_handle(&port_usart_cfg[0]);
+        uart0_tx_irq_handle(&port_usart_cfg[0]);
     }
 
     uart0_rx_irq_handle(&port_usart_cfg[0]);
@@ -165,15 +165,39 @@ void UART0_IRQHandler()
 
 void UART1_IRQHandler()
 {
+    /*
+     * Check if the UART tx interrupt is enabled
+     */
+    if (LPC_UART1->IER & UART_IER_THREINT)
+    {
+        uart1_tx_irq_handle(&port_usart_cfg[0]);
+    }
 
+    uart1_rx_irq_handle(&port_usart_cfg[0]);
 }
 
 void UART2_IRQHandler()
 {
+    /*
+     * Check if the UART tx interrupt is enabled
+     */
+    if (LPC_UART2->IER & UART_IER_THREINT)
+    {
+        uart2_tx_irq_handle(&port_usart_cfg[0]);
+    }
 
+    uart2_rx_irq_handle(&port_usart_cfg[0]);
 }
 
 void UART3_IRQHandler()
 {
+    /*
+     * Check if the UART tx interrupt is enabled
+     */
+    if (LPC_UART3->IER & UART_IER_THREINT)
+    {
+        uart3_tx_irq_handle(&port_usart_cfg[0]);
+    }
 
+    uart3_rx_irq_handle(&port_usart_cfg[0]);
 }
