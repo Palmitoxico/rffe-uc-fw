@@ -69,7 +69,15 @@ enum pin_mode_t
  */
 static inline void pin_config(int port, int pin, enum pin_func_t func, enum pin_mode_t mode)
 {
-    Chip_IOCON_PinMuxSet(LPC_IOCON, port, pin, func | mode);
+    if (mode == PIN_MODE_OD)
+    {
+        Chip_IOCON_PinMuxSet(LPC_IOCON, port, pin, func);
+        Chip_IOCON_EnableOD(LPC_IOCON, port, pin);
+    }
+    else
+    {
+        Chip_IOCON_PinMuxSet(LPC_IOCON, port, pin, func | mode);
+    }
 }
 
 #endif
