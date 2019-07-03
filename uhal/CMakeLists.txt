@@ -7,6 +7,7 @@ set(LIBUHAL_SRCS
   freertos-openocd.c
   pin_init.c
   uart.c
+  i2c.c
   )
 
 add_library(uhal STATIC ${LIBUHAL_SRCS})
