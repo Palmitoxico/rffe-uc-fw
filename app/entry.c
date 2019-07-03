@@ -26,6 +26,7 @@
 #include "uart.h"
 #include "i2c.h"
 
+#include "pin_mapping.h"
 #include "GitSHA1.h"
 
 #include <string.h>
@@ -51,7 +52,7 @@ void vTaskBlinky(void *pvParameters)
 
     while(1)
     {
-        gpio_pin_toggle(1, 23);
+        gpio_pin_toggle(led4_io.port, led4_io.pin);
         vTaskDelay(xDelay);
     }
 }

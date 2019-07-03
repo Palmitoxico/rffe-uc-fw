@@ -26,17 +26,18 @@
  * @author Augusto Fraga Giachero <afg@augustofg.net>, LNLS
  */
 
-#include "pin_init.h"
+#include "pin_mapping.h"
 
 struct pin_cfg_t pin_init_vec[] =
 {
-    {0, 2, PIN_FUNC_1, PIN_MODE_INACT, PIN_DIR_OUTPUT}, /* UART0 RXD P0.2 */
-    {0, 3, PIN_FUNC_1, PIN_MODE_INACT, PIN_DIR_INPUT}, /* UART0 TXD P0.3 */
-    {0, 19, PIN_FUNC_3, PIN_MODE_OD, PIN_DIR_OUTPUT}, /* I2C1 SDA P0.19 */
-    {0, 20, PIN_FUNC_3, PIN_MODE_OD, PIN_DIR_OUTPUT}, /* I2C1 SCL P0.20 */
-    {0, 27, PIN_FUNC_1, PIN_MODE_INACT, PIN_DIR_OUTPUT}, /* I2C0 SDA P0.27 */
-    {0, 28, PIN_FUNC_1, PIN_MODE_INACT, PIN_DIR_OUTPUT}, /* I2C0 SCL P0.28 */
-    {1, 23, PIN_FUNC_GPIO, PIN_MODE_INACT, PIN_DIR_OUTPUT}, /* LED4 P1.23 */
+    led4_io,
+    feram_wp_io,
+    uart0_rx_io,
+    uart0_tx_io,
+    i2c0_sda_io,
+    i2c0_scl_io,
+    i2c1_sda_io,
+    i2c1_scl_io,
 };
 
 const int pin_init_vec_len = sizeof(pin_init_vec) / sizeof(struct pin_cfg_t);
