@@ -75,7 +75,7 @@ add_executable(bootloader ${BOOT_SRCS})
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
   SUFFIX ".elf"
-  LINK_FLAGS "-T ${APP_LINKER_SCRIPT} ${TARGET_LINK_FLAGS}"
+  LINK_FLAGS "-T ${APP_LINKER_SCRIPT} ${TARGET_LINK_FLAGS} -u _printf_float"
   )
 
 set_target_properties(bootloader PROPERTIES
