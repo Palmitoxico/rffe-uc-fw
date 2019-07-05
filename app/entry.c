@@ -25,11 +25,12 @@
 #include "gpio.h"
 #include "uart.h"
 #include "i2c.h"
+#include "feram.h"
 
 #include "pin_mapping.h"
 #include "GitSHA1.h"
 
-#include <string.h>
+#include <stdio.h>
 
 TaskHandle_t vTaskBlinky_Handle, vTaskI2C_Handle;
 
@@ -60,41 +61,45 @@ void vTaskBlinky(void *pvParameters)
 void vTaskI2C(void *pvParameters)
 {
     const TickType_t xDelay = 200 / portTICK_PERIOD_MS;
-    i2c_transfer_t i2c_trans;
-    uint8_t tx_buf[8], rx_buf[128];
     char str[260];
+    float att;
 
-    /*
-     * FeRAM
-     */
-    tx_buf[0] = 0x01;
-    i2c_trans.slave_addr = 0b1010000;
-    i2c_trans.tx_buf = tx_buf;
-    i2c_trans.tx_size = 1;
-    i2c_trans.rx_buf = rx_buf;
-    i2c_trans.rx_size = 128;
-    i2c_master_transfer(1, &i2c_trans);
-
-    hex_to_str(rx_buf, str, 128);
-    uart_print(0, "FeRAM data (0x0000 - 0x007F): ", portMAX_DELAY);
+    uint8_t mac[6], ip[4];
+    feram_get_mac_addr(mac);
+    hex_to_str(mac, str, 6);
+    snprintf(str, 128, "Mac address: %02X:%02X:%02X:%02X:%02X:%02X\r\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     uart_print(0, str, portMAX_DELAY);
-    uart_print(0, "\r\n", portMAX_DELAY);
 
-    /*
-     * PLL
-     */
-    tx_buf[0] = 0x00;
-    i2c_trans.slave_addr = 0b1101001;
-    i2c_trans.tx_buf = tx_buf;
-    i2c_trans.tx_size = 1;
-    i2c_trans.rx_buf = rx_buf;
-    i2c_trans.rx_size = 1;
-    i2c_master_transfer(0, &i2c_trans);
-
-    hex_to_str(rx_buf, str, 1);
-    uart_print(0, "PLL address 0x00 content: ", portMAX_DELAY);
+    feram_get_ipv4_addr(ip);
+    snprintf(str, 128, "IP address (static): %d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
     uart_print(0, str, portMAX_DELAY);
-    uart_print(0, "\r\n", portMAX_DELAY);
+
+    feram_get_gateway_addr(ip);
+    snprintf(str, 128, "Gateway address: %d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
+    uart_print(0, str, portMAX_DELAY);
+
+    feram_get_mask_addr(ip);
+    snprintf(str, 128, "Mask address: %d.%d.%d.%d\r\n", ip[0], ip[1], ip[2], ip[3]);
+    uart_print(0, str, portMAX_DELAY);
+
+    feram_get_attenuation(&att);
+    snprintf(str, 128, "RF Attenuation: %f\r\n", att);
+    uart_print(0, str, portMAX_DELAY);
+
+    eth_addr_mode_t addr_mode;
+    feram_get_eth_addressing(&addr_mode);
+    switch (addr_mode)
+    {
+    case ETH_ADDR_MODE_STATIC:
+        uart_print(0, "Network ip config: static\r\n", portMAX_DELAY);
+        break;
+    case ETH_ADDR_MODE_DHCP:
+        uart_print(0, "Network ip config: dhcp\r\n", portMAX_DELAY);
+        break;
+    default:
+        uart_print(0, "Network ip config: not configured\r\n", portMAX_DELAY);
+        break;
+    }
 
     while(1)
     {
@@ -114,11 +119,20 @@ void vTaskI2C(void *pvParameters)
 void app_config()
 {
     /*
-     * Initialize UART0
+     * Initialize UART0, I2C0 and I2C1
      */
     uart_init(0, 19200);
     i2c_init(0, 50000);
     i2c_init(1, 50000);
+
+    /*
+     * Put the FeRAM in read-only mode
+     */
+    gpio_set_pin_high(feram_wp_io.port, feram_wp_io.pin);
+
+    /*
+     * Create tasks
+     */
     xTaskCreate(vTaskBlinky, "Blinky", 120, NULL, tskIDLE_PRIORITY, &vTaskBlinky_Handle);
     xTaskCreate(vTaskI2C, "I2C", 512, NULL, tskIDLE_PRIORITY, &vTaskI2C_Handle);
 }
