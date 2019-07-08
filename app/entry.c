@@ -26,6 +26,7 @@
 #include "uart.h"
 #include "i2c.h"
 #include "feram.h"
+#include "cdce906.h"
 
 #include "pin_mapping.h"
 #include "GitSHA1.h"
@@ -99,6 +100,15 @@ void vTaskI2C(void *pvParameters)
     default:
         uart_print(0, "Network ip config: not configured\r\n", portMAX_DELAY);
         break;
+    }
+
+    if (cdce906_pll_init() == 0)
+    {
+        uart_print(0, "Ethernet PLL configured\r\n", portMAX_DELAY);
+    }
+    else
+    {
+        uart_print(0, "Fail to configure the ethernet PLL\r\n", portMAX_DELAY);
     }
 
     while(1)
