@@ -23,6 +23,8 @@
 
 uint8_t cdce906_config[] =
 {
+    0, /* Starting address */
+    26, /* Length */
     0x1,
     9,   /* PLL 1 M */
     25,   /* PLL 1 N */
@@ -54,11 +56,21 @@ uint8_t cdce906_config[] =
 int cdce906_pll_init()
 {
     i2c_transfer_t i2c_trans;
+    int err;
 
     i2c_trans.slave_addr = 0b1101001;
     i2c_trans.tx_buf = cdce906_config;
     i2c_trans.tx_size = sizeof(cdce906_config);
     i2c_trans.rx_size = 0;
 
-    return i2c_master_transfer(0, &i2c_trans);
+    err = i2c_master_transfer(0, &i2c_trans);
+    if (i2c_trans.status != I2C_TRANSFER_COMPLETE)
+    {
+        return -1;
+    }
+    else if (err < 0)
+    {
+        return -2;
+    }
+    return 0;
 }
